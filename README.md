@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # LAPORAN UTS NETWORK SECURITY
 ## Kasus 5 (K5) — Dokumentasi Tugas 1–7
 
@@ -722,3 +723,7 @@ Berdasarkan praktikum Kasus 5, terdapat tujuh materi keamanan jaringan yang tela
 Setiap praktikum memberikan pemahaman mengenai cara kerja teknologi jaringan, potensi kerentanan, serta metode pengujian dan mitigasi dalam lingkungan laboratorium.
 
 Dokumentasi ini dilengkapi dengan perintah praktikum, penjelasan fungsi setiap perintah, hasil pengujian, dan bukti screenshot sebagai pendukung laporan.
+=======
+# UTS-Network-Security
+Pengumpulan Tugas Ujian Tengah Semester (UTS) Mata Kuliah Network Security.  **Nama:** Putra Baadi Zaelani   **NIM:** 24552011131   **Program Studi:** Teknik Informatika  Repository ini berisi kumpulan source code, dokumentasi, dan bukti hasil pengerjaan praktikum UTS Network Security.
+>>>>>>> fbae413f7fb3f3a714929c5ca5f7c47d337840ce
