@@ -652,12 +652,12 @@ Penjelasan:
 **E. Menganalisis log DNS**
 
 ```bash
-python3 kasus/k9-dns-detect/analisis_dns.py dns-k5.log
+python3 kasus/k5-dns-exfil/analisis_dns.py dns-k5.log
 ```
 
 Penjelasan:
 - `python3` menjalankan program Python.
-- `kasus/k9-dns-detect/analisis_dns.py` merupakan script analisis DNS.
+- `kasus/k5-dns-exfil/analisis_dns.py` merupakan script analisis DNS.
 - `dns-k5.log` menjadi file masukan.
 - Script digunakan untuk mendeteksi pola query DNS yang mencurigakan sesuai aturan yang dibuat.
 

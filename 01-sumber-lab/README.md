@@ -14,7 +14,7 @@ b/b1-compose/             docker-compose.yml Soal B1 (jaringan internal)
 b/b3-syn-flood/           docker-compose.yml Soal B3 (SYN flood)
 b/b4-dns-exfil/           docker-compose.yml Soal B4 (DNS exfiltration)
 kasus/k5-scapy/           Skrip Scapy untuk Kasus 5
-kasus/k9-dns-detect/      Skrip deteksi DNS exfiltration untuk Kasus 9
+kasus/k5-dns-exfil/      Skrip deteksi DNS exfiltration untuk Kasus 5 - Tugas 7
 ```
 
 ## Persiapan (sebelum ujian)
@@ -97,9 +97,9 @@ docker compose down -v
 ## Studi Kasus (perintah pendukung)
 
 - Kasus 5: `docker run --rm -it --network lab-net -v "$PWD/kasus/k5-scapy:/work" uts-kali-tools python3 /work/kirim_icmp.py <ip-target>`
-- Kasus 9: `python3 kasus/k9-dns-detect/analisis_dns.py dns.log`
+- Kasus 5 - Tugas 7: `python3 kasus/k5-dns-exfil/analisis_dns.py dns.log`
 
-Untuk Kasus 9, simpan log dengan `docker compose logs dns > dns.log`.
+Untuk Kasus 5 - Tugas 7, simpan log dengan `docker compose logs dns > dns.log`.
 
 ## Menentukan kasus per NIM
 
