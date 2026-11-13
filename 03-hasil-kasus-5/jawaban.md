@@ -2,7 +2,7 @@
 ## Kasus 5 (K5) — Dokumentasi Tugas 1–7
 
 **Nama:** Putra Baadi Zaelani  
-**NIM:** [Isi NIM]  
+**NIM:** 24552011131  
 **Program Studi:** Teknik Informatika  
 **Mata Kuliah:** Network Security  
 
