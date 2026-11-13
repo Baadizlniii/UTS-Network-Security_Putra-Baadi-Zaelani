@@ -1,0 +1,27 @@
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+
+# WiFi captures and metadata
+*.cap
+*.pcap
+*.csv
+*.kismet.netxml
+
+# Logs and temporary results
+*.log
+laporan-k5.enc
+laporan-k5.txt
+hasil-k5.txt
+dns-k5.log
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment secrets
+.env
+.env.*
+!.env.example
